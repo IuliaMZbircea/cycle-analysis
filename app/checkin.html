@@ -1,0 +1,968 @@
+<title>Evening Check-in</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --ground:#F6F3F3; --surface:#FFFFFF; --surface-2:#EFEAEA;
+  --ink:#191416; --muted:#6B5F62; --rule:#DFD6D8;
+  --accent:#9C2740; --accent-ink:#FFFFFF; --accent-soft:#F1E2E5;
+  --teal:#276560; --teal-soft:#E1EDEB; --bar:#C9B9BD;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141013; --surface:#1C171A; --surface-2:#262024;
+    --ink:#EDE5E6; --muted:#A29498; --rule:#352C31;
+    --accent:#E4788C; --accent-ink:#1A0E12; --accent-soft:#3A222A;
+    --teal:#79BDB5; --teal-soft:#1E2E2D; --bar:#5A4A50;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141013; --surface:#1C171A; --surface-2:#262024;
+  --ink:#EDE5E6; --muted:#A29498; --rule:#352C31;
+  --accent:#E4788C; --accent-ink:#1A0E12; --accent-soft:#3A222A;
+  --teal:#79BDB5; --teal-soft:#1E2E2D; --bar:#5A4A50;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:460px;margin:0 auto;padding:20px 16px calc(40px + env(safe-area-inset-bottom))}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+header{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.daterow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.navbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--rule);
+  background:var(--surface);color:var(--ink);font-size:20px;cursor:pointer;flex:0 0 auto}
+.navbtn:disabled{opacity:.3;cursor:default}
+.datebox{text-align:center;flex:1}
+.date{font-family:"Newsreader",Georgia,serif;font-size:1.7rem;font-weight:500;letter-spacing:-.01em;line-height:1.1}
+.sub{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.who{font-size:12px;color:var(--muted);margin-top:6px}
+.who:empty{display:none}
+.chips-h{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.chip{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.chip.cd{background:var(--accent-soft);color:var(--accent)}
+
+.group-title{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:22px 4px 10px;font-family:"IBM Plex Mono",monospace}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:16px;margin-bottom:12px}
+.item + .item{border-top:1px solid var(--rule);padding-top:14px;margin-top:14px}
+.q{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 10px}
+.q b{font-weight:600;font-size:15px}
+.q span{font-size:12px;color:var(--muted);text-align:right}
+.q .req{color:var(--accent)}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale button,.seg button{height:48px;border-radius:10px;border:1px solid var(--rule);background:var(--surface-2);color:var(--ink);
+  font:600 17px "IBM Plex Mono",monospace;cursor:pointer;transition:background .12s,border-color .12s;padding:0 4px}
+.scale button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.ends{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--muted);margin-top:6px}
+.ends span:last-child{text-align:right}
+
+.seg{display:grid;gap:6px}
+.seg.c3{grid-template-columns:repeat(3,1fr)}
+.seg.c4{grid-template-columns:repeat(4,1fr)}
+.seg button{font:500 13.5px "Public Sans",sans-serif;height:44px;line-height:1.15}
+.seg button[aria-pressed="true"]{background:var(--teal-soft);border-color:var(--teal);color:var(--teal);font-weight:600}
+
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;cursor:pointer}
+.toggle .lbl b{display:block;font-weight:600;font-size:15px}
+.toggle .lbl span{font-size:12.5px;color:var(--muted)}
+.switch{position:relative;width:52px;height:32px;flex:0 0 auto}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.switch i{position:absolute;inset:0;border-radius:999px;background:var(--surface-2);border:1px solid var(--rule);transition:background .15s}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .15s}
+.switch input:checked + i{background:var(--accent);border-color:var(--accent)}
+.switch input:checked + i::after{transform:translateX(20px)}
+.switch input:focus-visible + i{outline:2px solid var(--accent);outline-offset:2px}
+.sub-row{margin-top:10px}
+.sub-row[hidden]{display:none}
+
+.tags{display:flex;flex-wrap:wrap;gap:7px}
+.tags button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--rule);background:var(--surface-2);color:var(--ink);font:500 14px "Public Sans",sans-serif;cursor:pointer}
+.tags button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+
+details.more{margin-top:4px}
+details.more summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:15px 16px;font-weight:600;font-size:15px;min-height:52px}
+details.more summary::-webkit-details-marker{display:none}
+.mhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;flex:1;min-width:0}
+.mhead b{font-weight:600}
+.msub{font-weight:400;font-size:12.5px;color:var(--muted)}
+.micons{display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:8px}
+.mi{display:inline-flex;align-items:center;gap:5px;padding:5px 9px 5px 7px;border-radius:999px;background:var(--surface-2);font-size:12px;font-weight:500;color:var(--muted)}
+.mi em{font-style:normal}
+.mi svg{width:15px;height:15px;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+details.more[open] .micons{display:none}
+details.more summary::after{content:"+";font:500 20px "IBM Plex Mono",monospace;color:var(--muted);margin-left:10px}
+details.more[open] summary::after{content:"–"}
+details.more[open] summary{margin-bottom:12px}
+
+textarea{width:100%;min-height:64px;resize:vertical;border:1px solid var(--rule);border-radius:10px;background:var(--surface-2);color:var(--ink);font:16px "Public Sans",sans-serif;padding:10px 12px}
+button:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.save{width:100%;height:56px;border:1px solid var(--accent);border-radius:14px;background:var(--accent);color:var(--accent-ink);font:600 16px "Public Sans",sans-serif;cursor:pointer;margin-top:18px}
+.save:disabled{background:var(--surface-2);border-color:var(--rule);color:var(--muted);cursor:default}
+.status{text-align:center;font-size:13px;color:var(--muted);min-height:20px;margin:10px 0 26px}
+.status.ok{color:var(--teal)}
+.status.err{color:var(--accent)}
+
+h2{font-family:"Newsreader",Georgia,serif;font-size:1.2rem;font-weight:600;margin:0 0 4px}
+.hint{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.strip{display:grid;grid-template-columns:repeat(28,1fr);gap:2px;align-items:end;height:84px}
+.day{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:3px;cursor:pointer}
+.day .b{width:100%;border-radius:2px 2px 0 0;background:var(--bar);min-height:2px}
+.day.logged .b{background:var(--muted)}
+.day.hi .b{background:var(--teal)}
+.day.lo .b{background:var(--accent)}
+.day.sel .b{outline:2px solid var(--ink);outline-offset:1px}
+.day .m{width:5px;height:5px;border-radius:50%}
+.day .m.p{background:var(--accent)}
+.day .m.lh{background:var(--teal)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:0}
+.axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:4px}
+.foot{font-size:12px;color:var(--muted);margin-top:26px;line-height:1.55}
+/* ring */
+.ringwrap{display:flex;flex-direction:column;align-items:center;margin:4px 0 2px}
+.ring{width:min(260px,72vw);height:auto;display:block;overflow:visible}
+.ring .sg{fill:none;stroke-width:14;stroke:var(--surface-2);transition:stroke .3s}
+.ring .sg.logged{stroke:var(--muted);stroke-opacity:.5}
+.ring .sg.period{stroke:var(--accent);stroke-opacity:1}
+.ring .sg.lh{stroke:var(--teal);stroke-opacity:1}
+.ring .sg.future{stroke:var(--surface-2);stroke-opacity:.55}
+.ring .sg.sel{stroke-width:19}
+.ring .ov{stroke:var(--teal);stroke-width:2.5;stroke-linecap:round}
+.ring .mk{fill:var(--ink)}
+.ring .mk-halo{fill:var(--ink);opacity:.15}
+.ring .rn{font:500 58px "Newsreader",Georgia,serif;fill:var(--ink);text-anchor:middle}
+.ring .rl{font:600 10.5px "IBM Plex Mono",monospace;letter-spacing:.14em;fill:var(--muted);text-anchor:middle;text-transform:uppercase}
+.ring .rs{font:500 12.5px "Public Sans",sans-serif;fill:var(--accent);text-anchor:middle}
+.ring.draw .sg{animation:segin .5s ease-out both}
+@keyframes segin{from{stroke-opacity:0}}
+.ring .sg.pop{animation:pop .7s ease-out}
+@keyframes pop{0%{stroke-width:14}40%{stroke-width:26}100%{stroke-width:19}}
+.ring .mk-halo.pulse{animation:halo 1.1s ease-out}
+@keyframes halo{0%{opacity:.45;transform:scale(1)}100%{opacity:.15;transform:scale(1.9)}}
+.ring .mk-halo{transform-box:fill-box;transform-origin:center}
+.ringkey{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font-size:11px;color:var(--muted);margin-top:6px}
+.ringkey i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:0}
+.ringkey i.ovk{width:10px;height:2.5px;border-radius:2px;vertical-align:2px}
+
+/* milestones */
+.ms{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:13px 16px 14px;margin:14px 0 0}
+.ms-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ms-top b{font-size:14.5px;font-weight:600}
+.ms-top span{font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap}
+.ms-desc{font-size:12.5px;color:var(--muted);margin:2px 0 10px}
+.ms-bar{height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.ms-bar span{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .6s ease}
+.ms-steps{display:flex;justify-content:space-between;gap:6px;margin-top:10px}
+.ms-step{flex:1;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);min-width:0}
+.ms-step i{flex:0 0 auto;width:15px;height:15px;border-radius:50%;border:1.5px solid var(--rule);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:9px;color:var(--accent-ink)}
+.ms-step.done i{background:var(--teal);border-color:var(--teal)}
+.ms-step.next{color:var(--ink);font-weight:600}
+.ms-step.next i{border-color:var(--accent)}
+.ms-step span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* reveal */
+.reveal{perspective:900px;margin:0 0 26px}
+.reveal[hidden]{display:none}
+.rv{background:var(--surface);border:1px solid var(--rule);border-radius:16px;padding:18px 18px 16px;
+  transform-origin:top center;box-shadow:0 14px 34px -22px rgba(0,0,0,.55)}
+.reveal.show .rv{animation:flip .7s cubic-bezier(.2,.8,.25,1) both}
+@keyframes flip{from{transform:rotateX(-80deg);opacity:0}to{transform:none;opacity:1}}
+.rv-eye{font:600 10.5px "IBM Plex Mono",monospace;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+.rv-eye.mine{color:var(--teal)}
+.rv-text{font-family:"Newsreader",Georgia,serif;font-size:1.22rem;line-height:1.4;margin:0}
+.rv-foot{font-size:12px;color:var(--muted);margin:10px 0 0}
+.rv-foot:empty{display:none}
+.status + .reveal{margin-top:-14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="daterow">
+      <button class="navbtn" id="prev" type="button" aria-label="Previous day">‹</button>
+      <div class="datebox">
+        <div class="date" id="dateLabel">—</div>
+        <div class="sub mono" id="dateSub">today</div>
+        <div class="who" id="whoami"></div>
+      </div>
+      <button class="navbtn" id="next" type="button" aria-label="Next day">›</button>
+    </div>
+    <div class="ringwrap">
+      <svg class="ring" id="ring" viewBox="0 0 260 260" role="img" aria-label="Cycle ring"></svg>
+      <div class="ringkey">
+        <span><i style="background:var(--accent)"></i>period</span>
+        <span><i style="background:var(--muted);opacity:.5"></i>logged</span>
+        <span><i style="background:var(--teal)"></i>LH positive</span>
+        <span><i class="ovk" style="background:var(--teal)"></i>est. ovulation</span>
+      </div>
+    </div>
+    <div class="ms" id="ms"></div>
+  </header>
+
+  <p class="group-title">Your day</p>
+  <div class="card" id="coreScales"></div>
+
+  <p class="group-title">Body</p>
+  <div class="card">
+    <div class="item">
+      <label class="toggle">
+        <span class="lbl"><b>Period today</b><span>any bleeding, including spotting</span></span>
+        <span class="switch"><input type="checkbox" data-bool="period"><i></i></span>
+      </label>
+      <div class="sub-row" id="flowRow" hidden>
+        <div class="seg c3" data-seg="flow">
+          <button type="button" data-v="spotting">Spotting</button>
+          <button type="button" data-v="light">Light</button>
+          <button type="button" data-v="medium">Medium</button>
+        </div>
+        <div class="seg c3" data-seg="flow" style="margin-top:6px;grid-template-columns:1fr">
+          <button type="button" data-v="heavy">Heavy</button>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <p class="q"><b>Symptoms</b><span>tap all that apply</span></p>
+      <div class="tags" id="symptoms"></div>
+    </div>
+    <div class="item">
+      <label class="toggle">
+        <span class="lbl"><b>Took a painkiller</b><span>ibuprofen, paracetamol, etc.</span></span>
+        <span class="switch"><input type="checkbox" data-bool="painkiller"><i></i></span>
+      </label>
+    </div>
+    <div class="item">
+      <label class="toggle">
+        <span class="lbl"><b>Feeling sick</b><span>cold, fever, infection</span></span>
+        <span class="switch"><input type="checkbox" data-bool="sick"><i></i></span>
+      </label>
+    </div>
+    <div class="item">
+      <p class="q"><b>Ovulation test</b><span>only on days you test</span></p>
+      <div class="seg c3" data-seg="lh">
+        <button type="button" data-v="">Not tested</button>
+        <button type="button" data-v="neg">Negative</button>
+        <button type="button" data-v="pos">Positive</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="group-title">Context</p>
+  <div class="card">
+    <div class="item">
+      <label class="toggle">
+        <span class="lbl"><b>I pushed myself today</b><span>went past what felt sustainable</span></span>
+        <span class="switch"><input type="checkbox" data-bool="pushed"><i></i></span>
+      </label>
+    </div>
+    <div class="item">
+      <p class="q"><b>Anything worth noting?</b><span>optional</span></p>
+      <textarea id="note" maxlength="280" placeholder="Bad sleep, deadline, travel, argument…"></textarea>
+    </div>
+  </div>
+
+  <details class="more" id="more">
+    <summary><span class="mhead"><b>More</b><span class="msub">optional · ~20 sec</span><span class="micons"><span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><em>Libido</em></span><span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-1.7 1-3 3.2-3 6v3h3v9"/></svg><em>Appetite</em></span><span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 3v3M12 3v3"/></svg><em>Coffee</em></span><span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10l-1 6a4 4 0 0 1-8 0L7 3zM12 13v8M8 21h8"/></svg><em>Alcohol</em></span><span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/></svg><em>Mucus</em></span></span></span></summary>
+    <div class="card" id="moreScales"></div>
+    <div class="card">
+      <div class="item">
+        <p class="q"><b>Coffees</b><span>including strong black/green tea</span></p>
+        <div class="seg c4" data-seg="caffeine">
+          <button type="button" data-v="0">0</button><button type="button" data-v="1">1</button>
+          <button type="button" data-v="2">2</button><button type="button" data-v="3">3+</button>
+        </div>
+      </div>
+      <div class="item">
+        <p class="q"><b>Alcohol</b><span>drinks</span></p>
+        <div class="seg c4" data-seg="alcohol">
+          <button type="button" data-v="0">0</button><button type="button" data-v="1">1</button>
+          <button type="button" data-v="2">2</button><button type="button" data-v="3">3+</button>
+        </div>
+      </div>
+      <div class="item">
+        <p class="q"><b>Cervical mucus</b><span>an ovulation sign</span></p>
+        <div class="seg c4" data-seg="mucus">
+          <button type="button" data-v="dry">Dry</button>
+          <button type="button" data-v="creamy">Creamy</button>
+          <button type="button" data-v="watery">Watery</button>
+          <button type="button" data-v="eggwhite">Egg white</button>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <button class="save" id="save" type="button" disabled>Save</button>
+  <div class="status" id="status" aria-live="polite">Connecting…</div>
+  <div class="reveal" id="reveal" hidden aria-live="polite">
+    <div class="rv"><p class="rv-eye" id="rvEye"></p><p class="rv-text" id="rvText"></p><p class="rv-foot" id="rvFoot"></p></div>
+  </div>
+
+  <div class="card">
+    <h2>Last 28 days</h2>
+    <p class="hint">Bar height shows energy. Tap a day to open it.</p>
+    <div class="strip" id="strip"></div>
+    <div class="axis mono"><span id="axStart"></span><span>today</span></div>
+    <div class="legend">
+      <span><i style="background:var(--teal)"></i>energy 4–5</span>
+      <span><i style="background:var(--accent)"></i>energy 1–2</span>
+      <span><i style="background:var(--accent);width:5px;height:5px"></i>period</span>
+      <span><i style="background:var(--teal);width:5px;height:5px"></i>positive LH test</span>
+    </div>
+  </div>
+
+  <p class="foot">Only energy and drained are required; everything else can stay blank. Each person who opens this page has their own log, and only you see yours here. The page's owner can also read every log for analysis, as agreed. Apple Watch data is added later, when you export it from the Health app.</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CORE_SCALES = [
+    { f: "energy",  q: "Energy today", hint: "across the whole day", lo: "running on empty", hi: "full tank", req: true },
+    { f: "drained", q: "How drained are you?", hint: "right now", lo: "fresh", hi: "completely spent",  req: true },
+    { f: "effort",  q: "How much effort did things take?", hint: "compared with a normal day", lo: "easier than usual", hi: "much harder" },
+    { f: "focus",   q: "Focus", hint: "how easily you concentrated", lo: "scattered", hi: "very sharp" },
+    { f: "mood",    q: "Mood", hint: "", lo: "very low", hi: "very good" },
+    { f: "stress",  q: "Stress", hint: "", lo: "relaxed", hi: "very stressed" },
+    { f: "sleepq",  q: "How did you sleep last night?", hint: "how it felt, not how long", lo: "very badly", hi: "very well" }
+  ];
+  var MORE_SCALES = [
+    { f: "libido",   q: "Libido", hint: "", lo: "none", hi: "very high" },
+    { f: "appetite", q: "Appetite", hint: "", lo: "very low", hi: "very high" }
+  ];
+  var SYMPTOMS = [
+    ["cramps","Cramps"],["headache","Headache"],["bloating","Bloating"],["breasts","Tender breasts"],
+    ["backpain","Back pain"],["acne","Acne"],["cravings","Cravings"],["nausea","Nausea"],
+    ["digestion","Digestive issues"],["irritable","Irritable"],["anxious","Anxious"],["tearful","Tearful"]
+  ];
+  var SCALE_FIELDS = CORE_SCALES.concat(MORE_SCALES).map(function (s) { return s.f; });
+  var BOOLS = ["period", "painkiller", "sick", "pushed"];
+  var SEGS = { flow: "str", lh: "str", caffeine: "int", alcohol: "int", mucus: "str" };
+
+  var entries = Object.create(null);
+  var uid = null;   // this viewer's private subtree: data/users/<uid>/<date>
+  var db = null, dirty = false, saving = false;
+  var state = blank();
+
+  // ---------- dates (local time) ----------
+  function key(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function parse(k) { var p = k.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(k, n) { var d = parse(k); d.setDate(d.getDate() + n); return key(d); }
+  function diffDays(a, b) { return Math.round((parse(a) - parse(b)) / 86400000); }
+  function todayKey() { var d = new Date(); if (d.getHours() < 4) d.setDate(d.getDate() - 1); return key(d); }
+  var selected = todayKey();
+
+  function blank() {
+    var s = { symptoms: [], note: "" };
+    SCALE_FIELDS.forEach(function (f) { s[f] = null; });
+    BOOLS.forEach(function (f) { s[f] = false; });
+    Object.keys(SEGS).forEach(function (f) { s[f] = null; });
+    return s;
+  }
+
+  // ---------- build UI ----------
+  function buildScales(containerId, defs) {
+    var c = document.getElementById(containerId);
+    defs.forEach(function (d) {
+      var item = document.createElement("div"); item.className = "item";
+      var q = document.createElement("p"); q.className = "q";
+      var b = document.createElement("b"); b.textContent = d.q;
+      var h = document.createElement("span"); h.textContent = d.req ? "required" : d.hint;
+      if (d.req) h.className = "req";
+      q.appendChild(b); q.appendChild(h);
+      var sc = document.createElement("div"); sc.className = "scale"; sc.dataset.scale = d.f;
+      sc.setAttribute("role", "group"); sc.setAttribute("aria-label", d.q + ", 1 to 5");
+      for (var i = 1; i <= 5; i++) {
+        var btn = document.createElement("button");
+        btn.type = "button"; btn.textContent = i; btn.dataset.v = i;
+        btn.setAttribute("aria-pressed", "false");
+        btn.setAttribute("aria-label", d.q + " " + i);
+        btn.addEventListener("click", function (e) {
+          var f = e.currentTarget.parentNode.dataset.scale, v = +e.currentTarget.dataset.v;
+          state[f] = state[f] === v ? null : v; touch();
+        });
+        sc.appendChild(btn);
+      }
+      var ends = document.createElement("div"); ends.className = "ends";
+      var l = document.createElement("span"); l.textContent = d.lo;
+      var r = document.createElement("span"); r.textContent = d.hi;
+      ends.appendChild(l); ends.appendChild(r);
+      item.appendChild(q); item.appendChild(sc); item.appendChild(ends);
+      c.appendChild(item);
+    });
+  }
+  buildScales("coreScales", CORE_SCALES);
+  buildScales("moreScales", MORE_SCALES);
+
+  var symEl = document.getElementById("symptoms");
+  SYMPTOMS.forEach(function (s) {
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = s[1]; b.dataset.v = s[0]; b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      var i = state.symptoms.indexOf(s[0]);
+      if (i >= 0) state.symptoms.splice(i, 1); else state.symptoms.push(s[0]);
+      touch();
+    });
+    symEl.appendChild(b);
+  });
+
+  document.querySelectorAll("[data-bool]").forEach(function (inp) {
+    inp.addEventListener("change", function () {
+      state[inp.dataset.bool] = inp.checked;
+      if (inp.dataset.bool === "period" && !inp.checked) state.flow = null;
+      touch();
+    });
+  });
+
+  document.querySelectorAll("[data-seg] button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.parentNode.dataset.seg;
+      var v = SEGS[f] === "int" ? +b.dataset.v : (b.dataset.v || null);
+      state[f] = (state[f] === v && f !== "lh") ? null : v;
+      touch();
+    });
+  });
+
+  document.getElementById("note").addEventListener("input", function (e) { state.note = e.target.value; touch(true); });
+
+  var more = document.getElementById("more");
+  try { if (localStorage.getItem("checkin-more-open") === "1") more.open = true; } catch (e) {}
+  more.addEventListener("toggle", function () { try { localStorage.setItem("checkin-more-open", more.open ? "1" : "0"); } catch (e) {} });
+
+  function touch(fromNote) {
+    dirty = true; renderForm(fromNote);
+    setStatus(entries[selected] ? "Unsaved changes" : "", "");
+  }
+
+  // ---------- render ----------
+  function renderForm(skipNote) {
+    document.querySelectorAll("[data-scale]").forEach(function (sc) {
+      var f = sc.dataset.scale;
+      sc.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.v === state[f])); });
+    });
+    document.querySelectorAll("[data-seg]").forEach(function (sg) {
+      var f = sg.dataset.seg;
+      sg.querySelectorAll("button").forEach(function (b) {
+        var v = SEGS[f] === "int" ? +b.dataset.v : (b.dataset.v || null);
+        b.setAttribute("aria-pressed", String(v === state[f]));
+      });
+    });
+    symEl.querySelectorAll("button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(state.symptoms.indexOf(b.dataset.v) >= 0));
+    });
+    document.querySelectorAll("[data-bool]").forEach(function (inp) { inp.checked = !!state[inp.dataset.bool]; });
+    document.getElementById("flowRow").hidden = !state.period;
+    if (!skipNote) document.getElementById("note").value = state.note || "";
+    var save = document.getElementById("save");
+    save.disabled = !db || saving || state.energy == null || state.drained == null;
+    save.textContent = entries[selected] ? "Update" : "Save";
+  }
+
+  function renderHeader() {
+    var d = parse(selected);
+    document.getElementById("dateLabel").textContent = d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    var off = diffDays(todayKey(), selected);
+    document.getElementById("dateSub").textContent = off === 0 ? "today" : off === 1 ? "yesterday" : off + " days ago";
+    document.getElementById("next").disabled = selected >= todayKey();
+    renderRing();
+    renderMilestones();
+  }
+
+  function cycleDay(k) {
+    var starts = Object.keys(entries).filter(function (d) {
+      var prev = entries[addDays(d, -1)];
+      return entries[d].period && entries[d].flow !== "spotting" && !(prev && prev.period);
+    }).sort();
+    var last = null;
+    for (var i = 0; i < starts.length; i++) if (starts[i] <= k) last = starts[i];
+    if (!last) return null;
+    var n = diffDays(k, last) + 1;
+    return n <= 60 ? n : null;
+  }
+
+  function renderStrip() {
+    var el = document.getElementById("strip"); el.textContent = "";
+    var end = todayKey();
+    for (var i = 27; i >= 0; i--) {
+      var k = addDays(end, -i), e = entries[k];
+      var col = document.createElement("div");
+      col.className = "day" + (e ? " logged" : "") + (k === selected ? " sel" : "");
+      if (e && e.energy >= 4) col.className += " hi";
+      if (e && e.energy != null && e.energy <= 2) col.className += " lo";
+      var bar = document.createElement("div"); bar.className = "b";
+      bar.style.height = e && e.energy ? (e.energy * 12) + "px" : "2px";
+      var mark = document.createElement("div");
+      mark.className = "m" + (e && e.period ? " p" : e && e.lh === "pos" ? " lh" : "");
+      col.appendChild(bar); col.appendChild(mark);
+      col.title = k + (e ? " · energy " + e.energy + ", drained " + e.drained : " · not logged");
+      (function (kk) { col.addEventListener("click", function () { go(kk); }); })(k);
+      el.appendChild(col);
+    }
+    document.getElementById("axStart").textContent = parse(addDays(end, -27)).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  }
+
+  function setStatus(text, cls) { var s = document.getElementById("status"); s.textContent = text; s.className = "status" + (cls ? " " + cls : ""); }
+
+  function go(k) { if (k > todayKey()) return; selected = k; hideReveal(); loadSelected(); window.scrollTo({ top: 0 }); }
+
+  function loadSelected() {
+    var e = entries[selected];
+    state = blank();
+    if (e) {
+      Object.keys(state).forEach(function (f) { if (e[f] !== undefined && e[f] !== null) state[f] = e[f]; });
+      state.symptoms = Array.isArray(e.symptoms) ? e.symptoms.slice() : [];
+      state.lh = e.lh || null;
+    } else {
+      var prev = entries[addDays(selected, -1)];
+      if (prev && prev.period) state.period = true;   // ongoing period carries forward
+    }
+    dirty = false;
+    renderHeader(); renderForm(); renderStrip();
+    if (db && Date.now() - lastSaveAt > 3000) setStatus(e ? "Saved earlier" : "", e ? "ok" : "");
+  }
+
+  document.getElementById("prev").addEventListener("click", function () { go(addDays(selected, -1)); });
+  document.getElementById("next").addEventListener("click", function () { go(addDays(selected, 1)); });
+
+
+  // =========================================================
+  //  Cycle model (shared by ring, milestones and reveal card)
+  // =========================================================
+  var lastSaveAt = 0, justSaved = null, ringDrawn = false, lastRingSig = null, lastMsSig = null;
+  var SVGNS = "http://www.w3.org/2000/svg";
+
+  function cycleStarts() {
+    return Object.keys(entries).filter(function (d) {
+      var prev = entries[addDays(d, -1)];
+      return entries[d].period && entries[d].flow !== "spotting" && !(prev && prev.period);
+    }).sort();
+  }
+  function avgCycleLen(st) {
+    var g = [];
+    for (var i = 1; i < st.length; i++) { var d = diffDays(st[i], st[i - 1]); if (d >= 20 && d <= 45) g.push(d); }
+    return g.length ? Math.round(g.reduce(function (a, b) { return a + b; }, 0) / g.length) : 28;
+  }
+  function completedCycles(st) {
+    var n = 0;
+    for (var i = 1; i < st.length; i++) { var d = diffDays(st[i], st[i - 1]); if (d >= 20 && d <= 45) n++; }
+    return n;
+  }
+  // Everything we know about the cycle that contains day k.
+  function cycleInfo(k) {
+    var st = cycleStarts(), L = avgCycleLen(st), idx = -1;
+    for (var i = 0; i < st.length; i++) if (st[i] <= k) idx = i;
+    var base = { starts: st, avg: L, day: null };
+    if (idx < 0) return base;
+    var start = st[idx], day = diffDays(k, start) + 1;
+    if (day > 60) return base;
+    var next = st[idx + 1] ? diffDays(st[idx + 1], start) : null;
+    var len = next || Math.max(L, day);
+    var lhDay = null;
+    for (var d = 0; d < len; d++) {
+      var e = entries[addDays(start, d)];
+      if (e && e.lh === "pos") { lhDay = d + 1; break; }
+    }
+    // Ovulation: LH surge + 1 day if tested; otherwise count back 13 days from the
+    // (actual or expected) next period — the rule our Marquette analysis calibrated.
+    var ov = lhDay ? lhDay + 1 : Math.max(8, len - 13);
+    return { starts: st, avg: L, day: day, start: start, len: len, ov: ov,
+             ovSource: lhDay ? "lh" : next ? "count" : "expected", completed: !!next };
+  }
+  function phaseOf(day, info) {
+    if (day <= 5) return "period";
+    if (day < info.ov - 2) return "follicular";
+    if (day <= info.ov + 1) return "ovulatory";
+    if (day > info.len - 5) return "late luteal";
+    return "luteal";
+  }
+  var PHASE_LABEL = { "period": "period days", "follicular": "follicular phase", "ovulatory": "around ovulation",
+                      "luteal": "luteal phase", "late luteal": "late luteal phase" };
+
+  // =========================================================
+  //  Cycle ring
+  // =========================================================
+  function el(tag, attrs, text) {
+    var n = document.createElementNS(SVGNS, tag);
+    for (var a in attrs) n.setAttribute(a, attrs[a]);
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function polar(r, deg) { var a = (deg - 90) * Math.PI / 180; return [130 + r * Math.cos(a), 130 + r * Math.sin(a)]; }
+  function arc(r, a0, a1) {
+    var p0 = polar(r, a0), p1 = polar(r, a1);
+    return "M" + p0[0].toFixed(2) + " " + p0[1].toFixed(2) + " A" + r + " " + r + " 0 " + (a1 - a0 > 180 ? 1 : 0) + " 1 " + p1[0].toFixed(2) + " " + p1[1].toFixed(2);
+  }
+
+  function renderRing() {
+    var svg = document.getElementById("ring");
+    var info = cycleInfo(selected);
+    var N, start, selIdx;
+    if (info.day) { N = info.len; start = info.start; selIdx = info.day - 1; }
+    else { N = 28; start = addDays(selected, -27); selIdx = 27; }
+    var today = todayKey(), R = 94, step = 360 / N, gap = Math.min(3, step * 0.28);
+    var sig = [selected, N, start, info.ov, info.day];
+    for (var j = 0; j < N; j++) { var ej = entries[addDays(start, j)]; sig.push(ej ? (ej.period ? "p" : ej.lh === "pos" ? "l" : "g") + ej.energy : "-"); }
+    sig = sig.join("|");
+    if (sig === lastRingSig && justSaved !== selected) return;
+    lastRingSig = sig;
+    svg.textContent = "";
+    if (!ringDrawn) svg.classList.add("draw");
+
+    for (var i = 0; i < N; i++) {
+      var k = addDays(start, i), e = entries[k];
+      var cls = "sg";
+      if (k > today) cls += " future";
+      else if (e && e.period) cls += " period";
+      else if (e && e.lh === "pos") cls += " lh";
+      else if (e) cls += " logged";
+      if (i === selIdx) cls += " sel";
+      if (i === selIdx && justSaved === selected) cls += " pop";
+      var path = el("path", { d: arc(R, i * step + gap / 2, (i + 1) * step - gap / 2), "class": cls });
+      if (!ringDrawn) path.style.animationDelay = (i * 16) + "ms";
+      var t = el("title", {}, k + (e ? " · energy " + e.energy : " · not logged"));
+      path.appendChild(t);
+      (function (kk) { path.addEventListener("click", function () { if (kk <= todayKey()) go(kk); }); path.style.cursor = "pointer"; })(k);
+      svg.appendChild(path);
+    }
+
+    if (info.day && info.ov >= 1 && info.ov <= N) {
+      var a = (info.ov - 0.5) * step;
+      var q0 = polar(R + 12, a), q1 = polar(R + 19, a);
+      svg.appendChild(el("line", { x1: q0[0], y1: q0[1], x2: q1[0], y2: q1[1], "class": "ov" }));
+    }
+
+    var m = polar(R - 20, (selIdx + 0.5) * step);
+    var halo = el("circle", { cx: m[0], cy: m[1], r: 7, "class": "mk-halo" + (justSaved === selected ? " pulse" : "") });
+    svg.appendChild(halo);
+    svg.appendChild(el("circle", { cx: m[0], cy: m[1], r: 4, "class": "mk" }));
+
+    if (info.day) {
+      svg.appendChild(el("text", { x: 130, y: 138, "class": "rn" }, String(info.day)));
+      svg.appendChild(el("text", { x: 130, y: 160, "class": "rl" }, "cycle day"));
+      var ph = PHASE_LABEL[phaseOf(info.day, info)];
+      var sub = info.completed ? ph : (info.ovSource === "lh" ? ph : ph + " (est.)");
+      svg.appendChild(el("text", { x: 130, y: 181, "class": "rs" }, sub));
+      svg.setAttribute("aria-label", "Cycle day " + info.day + " of about " + N + ", " + ph);
+    } else {
+      svg.appendChild(el("text", { x: 130, y: 136, "class": "rn" }, "—"));
+      svg.appendChild(el("text", { x: 130, y: 160, "class": "rl" }, "no cycle yet"));
+      svg.appendChild(el("text", { x: 130, y: 181, "class": "rs" }, "log a period day to start"));
+      svg.setAttribute("aria-label", "No cycle started yet. The ring shows the last 28 days.");
+    }
+    if (!ringDrawn) { ringDrawn = true; setTimeout(function () { svg.classList.remove("draw"); }, 1200); }
+    justSaved = null;
+  }
+
+  // =========================================================
+  //  Milestones
+  // =========================================================
+  var MILESTONES = [
+    { short: "14 days", title: "Personal insights", desc: "Your reveal card starts using your own data.", kind: "days", target: 14 },
+    { short: "1 cycle", title: "First full cycle", desc: "Enough data for your first personal curve.", kind: "cycles", target: 1 },
+    { short: "3 cycles", title: "Three full cycles", desc: "Enough data for forecasts to be tested.", kind: "cycles", target: 3 }
+  ];
+  function milestoneStatus(m, logged, info) {
+    if (m.kind === "days") {
+      var left = Math.max(0, m.target - logged);
+      return { done: left === 0, frac: Math.min(1, logged / m.target),
+               when: left === 0 ? "reached" : left + (left === 1 ? " check-in to go" : " check-ins to go") };
+    }
+    var done = completedCycles(info.starts);
+    if (done >= m.target) return { done: true, frac: 1, when: "reached" };
+    var cur = cycleInfo(todayKey());
+    if (!cur.day) return { done: false, frac: 0, when: "starts with your next period" };
+    var inCycle = Math.min(0.97, cur.day / cur.avg);
+    var daysLeft = Math.max(1, cur.avg - cur.day + 1) + (m.target - done - 1) * cur.avg;
+    return { done: false, frac: Math.min(0.99, (done + inCycle) / m.target), when: "about " + daysLeft + " days" };
+  }
+  function renderMilestones() {
+    var box = document.getElementById("ms");
+    var logged = Object.keys(entries).length, info = cycleInfo(todayKey());
+    var st = MILESTONES.map(function (m) { return milestoneStatus(m, logged, info); });
+    var nextIdx = st.findIndex(function (x) { return !x.done; });
+    var msig = JSON.stringify(st);
+    if (msig === lastMsSig) return;
+    var prevFrac = lastMsSig ? (JSON.parse(lastMsSig)[nextIdx] || {}).frac : 0;
+    lastMsSig = msig;
+    box.textContent = "";
+    var top = document.createElement("div"); top.className = "ms-top";
+    var b = document.createElement("b"), w = document.createElement("span");
+    var desc = document.createElement("p"); desc.className = "ms-desc";
+    var bar = document.createElement("div"); bar.className = "ms-bar";
+    var fill = document.createElement("span"); bar.appendChild(fill);
+    if (nextIdx < 0) {
+      b.textContent = "All milestones reached"; w.textContent = logged + " days logged";
+      desc.textContent = "Ask Claude for your forecast model."; fill.style.width = "100%";
+    } else {
+      b.textContent = "Next: " + MILESTONES[nextIdx].title; w.textContent = st[nextIdx].when;
+      desc.textContent = MILESTONES[nextIdx].desc;
+      fill.style.width = Math.round((prevFrac || 0) * 100) + "%";
+      requestAnimationFrame(function () { fill.style.width = Math.round(st[nextIdx].frac * 100) + "%"; });
+    }
+    top.appendChild(b); top.appendChild(w);
+    box.appendChild(top); box.appendChild(desc); box.appendChild(bar);
+    var steps = document.createElement("div"); steps.className = "ms-steps";
+    MILESTONES.forEach(function (m, i) {
+      var s = document.createElement("div");
+      s.className = "ms-step" + (st[i].done ? " done" : i === nextIdx ? " next" : "");
+      var dot = document.createElement("i"); dot.textContent = st[i].done ? "✓" : "";
+      var lab = document.createElement("span"); lab.textContent = m.short;
+      s.appendChild(dot); s.appendChild(lab); steps.appendChild(s);
+    });
+    box.appendChild(steps);
+  }
+
+  // =========================================================
+  //  Reveal card
+  // =========================================================
+  // Science notes. ph = phase they belong to, or "any". ids are stable: they are
+  // remembered per person so a note is not shown again until the pool is used up.
+  var NOTES = [
+    // ---------- any phase ----------
+    { id: "a01", ph: "any", t: "Across 102 studies, researchers found no measurable change in attention, memory or reasoning across the cycle. How it feels can differ; the capacity doesn't." },
+    { id: "a02", ph: "any", t: "In a study of over 600,000 tracked cycles, only about 13% were exactly 28 days long. \"Normal\" is a range, not a number." },
+    { id: "a03", ph: "any", t: "Cycles tend to get slightly shorter through your thirties and forties. Almost all of that change comes from a shorter follicular phase." },
+    { id: "a04", ph: "any", t: "Cycle lengths that vary by a few days from month to month are normal. Variation of up to about a week is still within the usual range." },
+    { id: "a05", ph: "any", t: "Gynaecologists describe the menstrual cycle as a vital sign: changes in its length or regularity can be an early hint about thyroid, metabolic or hormonal health." },
+    { id: "a06", ph: "any", t: "If a period is late, it is usually because ovulation happened late. The luteal phase after ovulation rarely stretches much." },
+    { id: "a07", ph: "any", t: "Stress can delay ovulation, which lengthens that cycle. That's why a hard month is often followed by a late period." },
+    { id: "a08", ph: "any", t: "Illness, travel across time zones and big changes in sleep can all shift when you ovulate, and with it when your next period arrives." },
+    { id: "a09", ph: "any", t: "Eating too little for how much you train can switch ovulation off altogether. Doctors call it low energy availability, and a missing period is often the first sign." },
+    { id: "a10", ph: "any", t: "The idea that friends' periods sync up has been tested repeatedly. With careful statistics, the effect disappears: overlapping periods happen by chance." },
+    { id: "a11", ph: "any", t: "You were born with one to two million immature eggs. About 400,000 remain at puberty, and only around 400–500 are ever ovulated." },
+    { id: "a12", ph: "any", t: "The follicle that ovulates this month started developing roughly three months ago. Some of what shapes this cycle was set in motion last season." },
+    { id: "a13", ph: "any", t: "The fertile window is about six days: sperm can survive up to five days, while an egg lasts only 12–24 hours after ovulation." },
+    { id: "a14", ph: "any", t: "Recalling symptoms after the fact makes premenstrual symptoms look worse than rating them day by day. That's exactly why this log asks about today, every day." },
+    { id: "a15", ph: "any", t: "About half of people report some premenstrual symptoms. Severe premenstrual dysphoric disorder, confirmed by daily ratings, affects only a few percent." },
+    { id: "a16", ph: "any", t: "Sleep loss raises resting heart rate in the same direction the luteal phase does. When we analyse your data, sleep has to be separated from your cycle, or it gets mistaken for it." },
+    { id: "a17", ph: "any", t: "Combined birth control pills stop ovulation. The bleed during the pill-free days is a withdrawal bleed from the pill's hormones, not a true period." },
+    { id: "a18", ph: "any", t: "In athletes, the best evidence finds at most a trivial dip in performance early in the cycle, and individual differences are far bigger than the phase effect." },
+    { id: "a19", ph: "any", t: "\"Cycle syncing\" your workouts and diet to your phases is popular, but the evidence behind it is weak. The one trial of cycle-timed dieting found no benefit." },
+    { id: "a20", ph: "any", t: "In a woman scanned by MRI on 30 consecutive days, parts of her hippocampus changed volume in step with progesterone. The brain responds to the cycle, even when performance doesn't change." },
+    { id: "a21", ph: "any", t: "Estradiol makes large brain networks work more tightly together; progesterone loosens them. That was shown by scanning the same person every day for a month." },
+    { id: "a22", ph: "any", t: "Heavy periods are one of the most common causes of iron deficiency, and low iron causes fatigue. If you're tired all month, it's worth asking for a ferritin test." },
+    { id: "a23", ph: "any", t: "Migraine, asthma, epilepsy and IBS can all flare around menstruation. Doctors call this pattern \"catamenial\", from the Greek for \"monthly\"." },
+    { id: "a24", ph: "any", t: "Your Apple Watch measures wrist temperature while you sleep and compares it with your own baseline, which is why wearing it to bed matters." },
+    { id: "a25", ph: "any", t: "In the 1,478 charted cycles we analysed, assuming \"day 14 = ovulation\" was off by more than three days in almost a third of them." },
+    { id: "a26", ph: "any", t: "The same data showed that counting back about 13 days from your next period predicts ovulation far better than counting forward from your last one." },
+    { id: "a27", ph: "any", t: "In a survey of 32,748 women, lost productivity came mostly from working while unwell, about 23 days a year, not from days taken off, which averaged 1.3." },
+    { id: "a28", ph: "any", t: "Your cycle probably isn't your only energy lever, and it may not be the biggest one. Part of what this log will show is how much it matters for you in particular." },
+    { id: "a29", ph: "any", t: "Alcohol shortens deep sleep and raises your overnight heart rate. On your watch, a drinks night can look a lot like a luteal night." },
+    { id: "a30", ph: "any", t: "Caffeine has a half-life of around five hours, so an afternoon coffee is still partly active at bedtime." },
+    { id: "a31", ph: "any", t: "Most of what we know about the cycle comes from small studies: the average cognition study had just 39 participants. Your months of daily data are a real contribution." },
+    { id: "a32", ph: "any", t: "Many older studies guessed cycle phase by counting days instead of measuring hormones. That's one reason cycle research has so many contradictory results." },
+    { id: "a33", ph: "any", t: "The hypothalamus doesn't release its cycle hormone steadily. It pulses, and the speed of the pulses decides whether the pituitary makes more LH or more FSH." },
+    { id: "a34", ph: "any", t: "The mood dip before a period is real on average, but about half of people don't have it. An average can describe almost nobody." },
+    { id: "a35", ph: "any", t: "Period tracking apps usually aren't covered by medical privacy laws. This log stays in your own private storage, and nothing is shared with advertisers." },
+
+    // ---------- period ----------
+    { id: "p01", ph: "period", t: "Estrogen and progesterone are at their lowest point of the whole cycle right now." },
+    { id: "p02", ph: "period", t: "Period cramps are driven by prostaglandins, which is why anti-inflammatories like ibuprofen tend to help more than paracetamol." },
+    { id: "p03", ph: "period", t: "Anti-inflammatories work best taken early, at the first sign of cramps, before prostaglandin levels peak." },
+    { id: "p04", ph: "period", t: "In one clinical trial, a heat patch on the lower abdomen relieved period pain about as well as ibuprofen." },
+    { id: "p05", ph: "period", t: "Your brain has already started the next cycle: rising FSH is recruiting a new group of follicles, and usually only one will make it to ovulation." },
+    { id: "p06", ph: "period", t: "In a study of 32,748 women, 81% said period symptoms lowered their productivity at work. You're far from alone if today feels harder." },
+    { id: "p07", ph: "period", t: "Only the top layer of the uterine lining sheds. The deeper layer stays and rebuilds a new lining over the next two weeks." },
+    { id: "p08", ph: "period", t: "Average blood loss is about 30–40 ml per period, a few tablespoons. More than about 80 ml counts as heavy." },
+    { id: "p09", ph: "period", t: "Menstrual migraines are linked to the drop in estrogen just before and during a period, not to the bleeding itself." },
+    { id: "p10", ph: "period", t: "Gentle exercise may ease period pain for some people, although the studies are small. It's worth testing on yourself." },
+    { id: "p11", ph: "period", t: "Energy often starts to lift within a few days of your period starting, as estradiol begins to rise again." },
+    { id: "p12", ph: "period", t: "Most periods last three to seven days. Days of spotting before the flow begins don't count as day 1 of your cycle." },
+
+    // ---------- follicular ----------
+    { id: "f01", ph: "follicular", t: "Estradiol is climbing as the lead follicle grows. Wrist temperature and resting heart rate are usually at their lowest in this phase." },
+    { id: "f02", ph: "follicular", t: "This is the stretch that decides how long your cycle is. Across the 1,478 charted cycles we analysed, 74% of the variation in cycle length happened here." },
+    { id: "f03", ph: "follicular", t: "Falling FSH is doing the selecting: as estradiol rises it suppresses FSH, and only the follicle most sensitive to it survives." },
+    { id: "f04", ph: "follicular", t: "The lead follicle grows by roughly 2 mm a day and reaches about 2 cm before it releases its egg." },
+    { id: "f05", ph: "follicular", t: "Estradiol rises several-fold over this phase, and the uterine lining thickens in response." },
+    { id: "f06", ph: "follicular", t: "Many people report their best wellbeing in this phase. Whether you do is one of the things your own data will show." },
+    { id: "f07", ph: "follicular", t: "If this phase runs long, that usually means stress, illness or travel delayed ovulation. The rest of the cycle then shifts later too." },
+    { id: "f08", ph: "follicular", t: "Your cervical mucus typically changes from dry to creamy during this phase, and then becomes wetter as ovulation approaches." },
+    { id: "f09", ph: "follicular", t: "Low progesterone means lower body temperature, which is the baseline your watch compares the post-ovulation rise against." },
+    { id: "f10", ph: "follicular", t: "Estradiol acts on the brain as well as the ovaries: it influences serotonin and dopamine signalling, which is part of why mood can track the cycle." },
+
+    // ---------- ovulatory ----------
+    { id: "o01", ph: "ovulatory", t: "When estradiol stays high for about two days, the brain flips from braking to accelerating and releases the LH surge. That surge is what ovulation strips detect." },
+    { id: "o02", ph: "ovulatory", t: "Ovulation follows about 36 hours after the LH surge begins. Afternoon tests catch it best." },
+    { id: "o03", ph: "ovulatory", t: "A rise in desire around ovulation is one of the most replicated cycle effects: it held up in a pre-registered study of over 26,000 diary entries." },
+    { id: "o04", ph: "ovulatory", t: "Egg-white cervical mucus usually appears one or two days before ovulation. It's your body's own advance notice." },
+    { id: "o05", ph: "ovulatory", t: "Some people feel a brief one-sided ache when they ovulate. It even has a name: mittelschmerz, German for \"middle pain\"." },
+    { id: "o06", ph: "ovulatory", t: "Testosterone rises slightly around ovulation too, although in studies it hasn't predicted changes in desire the way estradiol does." },
+    { id: "o07", ph: "ovulatory", t: "After release, the egg survives only 12–24 hours. Most of the fertile window comes before ovulation, not after." },
+    { id: "o08", ph: "ovulatory", t: "Your watch can't see ovulation happen. It sees the temperature rise that follows, which is why its estimates arrive a few days afterwards." },
+    { id: "o09", ph: "ovulatory", t: "The same hormone that held LH down all month, estradiol, is what now triggers its surge. Level and timing decide which effect it has." },
+
+    // ---------- luteal ----------
+    { id: "l01", ph: "luteal", t: "Progesterone is now the dominant hormone. It raises body temperature by about 0.3 °C, which is how your watch confirms ovulation after the fact." },
+    { id: "l02", ph: "luteal", t: "Your body burns roughly 6–7% more energy at rest in this phase than in the follicular phase." },
+    { id: "l03", ph: "luteal", t: "The luteal phase is steadier than the follicular one, typically around 13 days, which is why counting back from your next period works better than counting forward." },
+    { id: "l04", ph: "luteal", t: "Heart rate variability usually dips a little in this phase, and resting heart rate rises." },
+    { id: "l05", ph: "luteal", t: "The corpus luteum, a temporary gland formed from the follicle that released the egg, is producing the progesterone you're running on now." },
+    { id: "l06", ph: "luteal", t: "Progesterone turns the uterine lining from growing to secreting, preparing it for a possible pregnancy." },
+    { id: "l07", ph: "luteal", t: "Breast tenderness in this phase comes mostly from progesterone's effect on breast tissue and fluid." },
+    { id: "l08", ph: "luteal", t: "Some studies find people eat a little more in the luteal phase, but careful measurements disagree. Your appetite ratings will show your own pattern." },
+    { id: "l09", ph: "luteal", t: "A progesterone by-product called allopregnanolone acts on the brain's calming GABA system. For most people it's soothing; for a sensitive minority it can do the opposite." },
+    { id: "l10", ph: "luteal", t: "A luteal phase shorter than about 10 days is considered short. Over a few cycles, your data will show how long yours is." },
+
+    // ---------- late luteal ----------
+    { id: "x01", ph: "late luteal", t: "Progesterone and estradiol are starting to fall. This is when sleep fragments most, and sleep labs confirm it, not just self-reports." },
+    { id: "x02", ph: "late luteal", t: "About half of people notice a mood dip in these days; the other half don't. Your data will show which one you are." },
+    { id: "x03", ph: "late luteal", t: "Without a pregnancy, the corpus luteum runs on a roughly two-week timer. When it switches off, the hormone drop triggers your next period." },
+    { id: "x04", ph: "late luteal", t: "If you feel more drained this week, sleep may be part of it: late-luteal sleep has more awakenings and less deep sleep." },
+    { id: "x05", ph: "late luteal", t: "Prostaglandins start rising before bleeding begins, which is why cramps can arrive a day early." },
+    { id: "x06", ph: "late luteal", t: "Premenstrual symptoms are only diagnosed from daily ratings over at least two cycles, which is exactly the kind of record you're building." },
+    { id: "x07", ph: "late luteal", t: "Bloating in these days is linked to hormone-driven shifts in fluid balance and slower digestion." },
+    { id: "x08", ph: "late luteal", t: "Headaches in the days before a period are often triggered by estrogen falling, the same mechanism behind menstrual migraine." },
+    { id: "x09", ph: "late luteal", t: "Your wrist temperature should start dropping back toward its baseline just before your period. On a watch chart it's often the first sign one is coming." },
+    { id: "x10", ph: "late luteal", t: "Irritability before a period is one of the most commonly reported symptoms, and one of the ones that varies most between people." }
+  ];
+  var seenNotes = [], lastInsight = null;   // loaded from data/users/<uid>/meta
+
+  function pickNote(ph) {
+    var pool = NOTES.filter(function (n) { return n.ph === ph || n.ph === "any"; });
+    var unseen = pool.filter(function (n) { return seenNotes.indexOf(n.id) < 0; });
+    if (!unseen.length) {             // whole pool seen: start this pool over
+      var ids = pool.map(function (n) { return n.id; });
+      seenNotes = seenNotes.filter(function (id) { return ids.indexOf(id) < 0; });
+      unseen = pool;
+    }
+    // favour notes about the current phase when there are unseen ones left
+    var phaseOnes = unseen.filter(function (n) { return n.ph === ph; });
+    var from = phaseOnes.length && Math.random() < 0.6 ? phaseOnes : unseen;
+    var n = from[Math.floor(Math.random() * from.length)];
+    seenNotes.push(n.id);
+    return n;
+  }
+  function saveMeta() {
+    if (!db || !uid) return;
+    db.doc("data/users/" + uid + "/meta").set({ seenNotes: seenNotes.slice(-400), lastInsight: lastInsight }).catch(function () {});
+  }
+  function loadMeta() {
+    if (!db || !uid) return;
+    db.doc("data/users/" + uid + "/meta").get().then(function (snap) {
+      var m = snap && snap.exists ? snap.data() : null;
+      if (m && Array.isArray(m.seenNotes)) seenNotes = m.seenNotes.slice();
+      if (m && typeof m.lastInsight === "string") lastInsight = m.lastInsight;
+    }).catch(function () {});
+  }
+
+  function fmt(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function mean(a) { return a.reduce(function (s, x) { return s + x; }, 0) / a.length; }
+  function compare(A, B, build) {
+    A = A.filter(function (x) { return x != null; }); B = B.filter(function (x) { return x != null; });
+    if (A.length < 3 || B.length < 3) return null;
+    var a = mean(A), b = mean(B), d = a - b;
+    var text = build(fmt(a), fmt(b));
+    if (Math.abs(d) < 0.3) text += " Almost no difference so far.";
+    var small = Math.min(A.length, B.length) < 7;
+    return { text: text, size: Math.abs(d),
+             foot: "Based on " + A.length + " vs " + B.length + " days" + (small ? ". An early pattern, not a conclusion yet." : ".") };
+  }
+  function insights() {
+    var ks = Object.keys(entries).sort(), E = ks.map(function (k) { return entries[k]; });
+    var pick = function (pred, f) { return E.filter(pred).map(function (e) { return e[f]; }); };
+    var next = function (pred, f) {
+      var out = [];
+      ks.forEach(function (k) { var n = entries[addDays(k, 1)]; if (pred(entries[k]) && n) out.push(n[f]); });
+      return out;
+    };
+    var phaseVals = function (ph, f) {
+      return ks.filter(function (k) { var ci = cycleInfo(k); return ci.day && phaseOf(ci.day, ci) === ph; })
+               .map(function (k) { return entries[k][f]; });
+    };
+    return [
+      compare(pick(function (e) { return e.sleepq != null && e.sleepq <= 2; }, "energy"),
+              pick(function (e) { return e.sleepq >= 4; }, "energy"),
+              function (a, b) { return "On days after sleep you rated as poor, your energy averaged " + a + ", vs " + b + " after good nights."; }),
+      compare(pick(function (e) { return e.stress >= 4; }, "energy"),
+              pick(function (e) { return e.stress != null && e.stress <= 2; }, "energy"),
+              function (a, b) { return "On high-stress days your energy averaged " + a + ", vs " + b + " on calm days."; }),
+      compare(next(function (e) { return e.pushed; }, "drained"),
+              next(function (e) { return !e.pushed; }, "drained"),
+              function (a, b) { return "The day after you pushed yourself, you rated your drain at " + a + " on average, vs " + b + " after days you didn't."; }),
+      compare(pick(function (e) { return e.period; }, "effort"),
+              pick(function (e) { return !e.period; }, "effort"),
+              function (a, b) { return "On period days, things took " + a + "/5 effort on average, vs " + b + " on other days."; }),
+      compare(pick(function (e) { return e.period; }, "focus"),
+              pick(function (e) { return !e.period; }, "focus"),
+              function (a, b) { return "Your focus averaged " + a + " on period days and " + b + " on other days."; }),
+      compare(next(function (e) { return e.alcohol >= 2; }, "energy"),
+              next(function (e) { return e.alcohol === 0; }, "energy"),
+              function (a, b) { return "The day after 2+ drinks, your energy averaged " + a + ", vs " + b + " after alcohol-free days."; }),
+      compare(phaseVals("late luteal", "energy"), phaseVals("follicular", "energy"),
+              function (a, b) { return "In your late-luteal days, energy averaged " + a + ", vs " + b + " in your follicular phase."; })
+    ].filter(Boolean).sort(function (x, y) { return y.size - x.size; });
+  }
+  function hideReveal() { var r = document.getElementById("reveal"); r.hidden = true; r.classList.remove("show"); }
+  function showReveal() {
+    var logged = Object.keys(entries).length, info = cycleInfo(selected);
+    var eye = document.getElementById("rvEye"), text = document.getElementById("rvText"), foot = document.getElementById("rvFoot");
+    var found = logged >= 14 ? insights() : [];
+    if (found.length && Math.random() < 0.67) {
+      var top = found.slice(0, 4), fresh = top.filter(function (x) { return x.text !== lastInsight; });
+      var ins = (fresh.length ? fresh : top)[Math.floor(Math.random() * (fresh.length || top.length))];
+      lastInsight = ins.text; saveMeta();
+      eye.textContent = "From your data · " + logged + " days"; eye.className = "rv-eye mine";
+      text.textContent = ins.text; foot.textContent = ins.foot;
+    } else {
+      var ph = info.day ? phaseOf(info.day, info) : "any", note = pickNote(ph);
+      saveMeta();
+      eye.textContent = info.day ? "Cycle day " + info.day + " · the science" : "The science";
+      eye.className = "rv-eye";
+      text.textContent = note.t;
+      foot.textContent = logged < 14 ? "In " + (14 - logged) + " more check-in" + (14 - logged === 1 ? "" : "s") + ", this card starts showing patterns from your own data."
+                                     : "Keep logging stress, sleep and effort; your own patterns will appear here.";
+    }
+    var r = document.getElementById("reveal");
+    r.hidden = false; r.classList.remove("show"); void r.offsetWidth; r.classList.add("show");
+    setTimeout(function () { r.scrollIntoView({ behavior: "smooth", block: "center" }); }, 120);
+  }
+
+  // ---------- save ----------
+  document.getElementById("save").addEventListener("click", function () {
+    if (!db || saving) return;
+    saving = true; renderForm(true); setStatus("Saving…", "");
+    var body = { date: selected, schema: 2, savedAt: Date.now(), note: (state.note || "").trim(), symptoms: state.symptoms.slice() };
+    SCALE_FIELDS.forEach(function (f) { body[f] = state[f]; });
+    BOOLS.forEach(function (f) { body[f] = !!state[f]; });
+    Object.keys(SEGS).forEach(function (f) { body[f] = state[f] === undefined ? null : state[f]; });
+    if (!body.period) body.flow = null;
+    db.doc("data/users/" + uid + "/" + selected).set(body).then(function () {
+      entries[selected] = body; dirty = false; saving = false;
+      justSaved = selected; lastSaveAt = Date.now();
+      renderHeader(); renderForm(true); renderStrip(); setStatus("Saved", "ok");
+      showReveal();
+    }).catch(function (err) {
+      saving = false; renderForm(true);
+      setStatus("Not saved (" + (err && err.code ? err.code : "error") + "). Your answers are still here; try again.", "err");
+    });
+  });
+
+  // ---------- boot ----------
+  loadSelected(); setStatus("Connecting…", "");
+  if (!(window.claude && typeof window.claude.use === "function")) { setStatus("Saving only works when this page is opened on claude.ai.", "err"); return; }
+  Promise.all([window.claude.use("db"), window.claude.use("user")]).then(function (r) {
+    var ns = r[0], user = r[1];
+    if (!ns || !user) { setStatus("Saving isn't available in this view.", "err"); return null; }
+    return Promise.all([user.id(), user.name()]).then(function (who) {
+      if (!who[0]) { setStatus("Sign in to claude.ai to keep your own private log.", "err"); return null; }
+      uid = who[0];
+      document.getElementById("whoami").textContent = (who[1] ? who[1] + "'s" : "Your") + " private log";
+      return ns;
+    });
+  }).then(function (ns) {
+    if (!ns) return;
+    db = ns; renderForm(true); setStatus("", ""); loadMeta();
+    db.collection("data/users/" + uid).onSnapshot(function (snap) {
+      var next = Object.create(null);
+      snap.docs.forEach(function (d) { if (!d.exists) return; var v = d.data(); if (v && typeof v.date === "string") next[v.date] = v; });
+      entries = next;
+      if (!dirty) loadSelected(); else { renderHeader(); renderStrip(); }
+    }, function (err) { setStatus("Lost connection to your saved entries (" + (err && err.code) + "). Reload the page.", "err"); });
+  }).catch(function () { setStatus("Saving isn't available in this view.", "err"); });
+})();
+</script>

@@ -1,0 +1,12 @@
+# environment
+.venv/
+.env.sh
+__pycache__/
+.DS_Store
+
+# data: downloaded datasets and personal health exports never go in git
+data/
+
+# scratch / backups
+app/*.bak.html
+out/all_columns.txt

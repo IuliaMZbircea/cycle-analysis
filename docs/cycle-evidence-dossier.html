@@ -1,0 +1,495 @@
+<title>Cycle Evidence Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#F6F3F3; --surface:#FFFFFF; --surface-2:#EFEAEA;
+  --ink:#191416; --muted:#6B5F62; --rule:#DFD6D8;
+  --accent:#9C2740; --accent-soft:#F1E2E5;
+  --strong:#276560; --mixed:#96650F; --weak:#726669;
+  --strong-bg:#E1EDEB; --mixed-bg:#F3E9D8; --weak-bg:#E9E4E5;
+  --shadow:0 1px 2px rgba(25,20,22,.05), 0 8px 24px -16px rgba(25,20,22,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141013; --surface:#1C171A; --surface-2:#231D21;
+    --ink:#EDE5E6; --muted:#A29498; --rule:#332B2F;
+    --accent:#E4788C; --accent-soft:#3A222A;
+    --strong:#79BDB5; --mixed:#D9A755; --weak:#A29498;
+    --strong-bg:#1E2E2D; --mixed-bg:#302818; --weak-bg:#272023;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141013; --surface:#1C171A; --surface-2:#231D21;
+  --ink:#EDE5E6; --muted:#A29498; --rule:#332B2F;
+  --accent:#E4788C; --accent-soft:#3A222A;
+  --strong:#79BDB5; --mixed:#D9A755; --weak:#A29498;
+  --strong-bg:#1E2E2D; --mixed-bg:#302818; --weak-bg:#272023;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+
+.masthead{padding:64px 0 40px;border-bottom:1px solid var(--rule)}
+.kicker{
+  font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+}
+.kicker span.dot{color:var(--rule)}
+h1{
+  font-family:"Newsreader",Georgia,"Times New Roman",serif;font-weight:500;
+  font-size:clamp(2.5rem,6vw,4rem);line-height:1.04;letter-spacing:-.018em;
+  margin:0 0 20px;text-wrap:balance;
+}
+.standfirst{
+  font-family:"Newsreader",Georgia,serif;font-size:clamp(1.1rem,2.2vw,1.32rem);
+  line-height:1.52;color:var(--muted);max-width:60ch;margin:0 0 28px;
+}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:8px 28px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);letter-spacing:.03em;
+}
+
+section{padding:56px 0 8px;border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:0}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px;margin:0 0 14px;
+}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent);flex:0 0 auto}
+h2{
+  font-family:"Newsreader",Georgia,serif;font-weight:500;
+  font-size:clamp(1.7rem,3.4vw,2.3rem);line-height:1.14;letter-spacing:-.012em;
+  margin:0 0 18px;text-wrap:balance;
+}
+h3{
+  font-family:"Newsreader",Georgia,serif;font-weight:600;
+  font-size:1.22rem;line-height:1.3;margin:34px 0 10px;letter-spacing:-.004em;
+}
+h4{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:600;
+}
+p{margin:0 0 16px;max-width:70ch}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+a:hover{border-bottom-color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+ul,ol{margin:0 0 16px;padding-left:1.15em;max-width:70ch}
+li{margin-bottom:8px}
+li::marker{color:var(--accent)}
+strong{font-weight:600}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--surface-2);padding:1px 5px;border-radius:3px}
+
+.grade{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  padding:3px 8px;border-radius:3px;white-space:nowrap;line-height:1.5;
+}
+.g-strong{background:var(--strong-bg);color:var(--strong)}
+.g-mixed{background:var(--mixed-bg);color:var(--mixed)}
+.g-weak{background:var(--weak-bg);color:var(--weak)}
+
+.scroller{
+  overflow-x:auto;margin:22px 0 28px;border:1px solid var(--rule);
+  border-radius:6px;background:var(--surface);box-shadow:var(--shadow);
+}
+table{border-collapse:collapse;width:100%;min-width:660px;font-size:14.5px}
+thead th{
+  text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:600;
+  padding:13px 16px;border-bottom:1px solid var(--rule);background:var(--surface-2);white-space:nowrap;
+}
+tbody td{padding:14px 16px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+tbody tr:last-child td{border-bottom:0}
+td.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:13px;white-space:nowrap}
+td.name{font-weight:600;min-width:170px}
+.sub{display:block;color:var(--muted);font-size:12.5px;font-weight:400;margin-top:3px}
+
+.callout{
+  background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);
+  border-radius:0 6px 6px 0;padding:22px 24px;margin:28px 0;box-shadow:var(--shadow);
+}
+.callout p:last-child{margin-bottom:0}
+.callout .eyebrow{margin-bottom:10px;color:var(--accent)}
+.callout .eyebrow::before{display:none}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:16px;margin:24px 0 28px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:20px 20px 18px;box-shadow:var(--shadow)}
+.card h5{font-family:"Public Sans",sans-serif;font-size:15px;font-weight:600;margin:10px 0 8px;line-height:1.35}
+.card p{font-size:14px;color:var(--muted);margin:0;line-height:1.55}
+.card p + p{margin-top:10px}
+
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0;margin:26px 0 30px;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:var(--surface)}
+.phase{padding:18px 18px 20px;border-right:1px solid var(--rule)}
+.phase:last-child{border-right:0}
+.phase .d{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+.phase .n{font-family:"Newsreader",Georgia,serif;font-size:1.12rem;margin:5px 0 7px;font-weight:600}
+.phase .t{font-size:13.5px;color:var(--muted);line-height:1.5}
+
+.verified{
+  background:var(--strong-bg);border:1px solid color-mix(in srgb,var(--strong) 30%,transparent);
+  border-radius:6px;padding:20px 22px;margin:26px 0;
+}
+.verified .eyebrow{color:var(--strong);margin-bottom:10px}
+.verified .eyebrow::before{background:var(--strong)}
+.verified p:last-child{margin-bottom:0}
+
+.foot{margin-top:56px;padding-top:26px;border-top:1px solid var(--rule);font-size:13.5px;color:var(--muted)}
+.foot p{max-width:74ch}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .masthead{padding:44px 0 32px}
+  section{padding:44px 0 6px}
+  .phase{border-right:0;border-bottom:1px solid var(--rule)}
+  .phase:last-child{border-bottom:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="kicker">Research brief <span class="dot">/</span> menstrual cycle &amp; daily function <span class="dot">/</span> rev. 2, dataset claims verified</p>
+  <h1>Cycle Evidence Dossier</h1>
+  <p class="standfirst">What the literature actually supports about energy, concentration, libido and mood across the cycle — where the claims are solid, where they collapse under scrutiny, and which datasets you can start analysing this week.</p>
+  <div class="meta-row">
+    <span>Prepared for: early-stage product / research scoping</span>
+    <span>Scope: eumenorrheic adults, non-clinical &amp; clinical populations</span>
+  </div>
+</header>
+
+<section>
+  <p class="eyebrow">The short version</p>
+  <h2>The evidence is asymmetric — and that asymmetry is the opportunity</h2>
+  <p>There is a strong temptation in this space to claim that the cycle measurably degrades women's performance. The best current evidence does not support that claim, and building on it would put you on the wrong side of the literature within a year.</p>
+  <p>What the evidence <em>does</em> support is different and, commercially, more interesting: <strong>physiology, subjective experience and symptom burden vary robustly across the cycle, while objective task performance largely does not.</strong> People feel and function differently, incur real costs, and self-report substantial impairment — but when you sit them down at a cognitive battery, the effect vanishes. That gap is not a bug in the science; it is the actual phenomenon, and almost nobody is building for it well.</p>
+
+  <div class="scroller">
+    <table>
+      <thead>
+        <tr><th>Outcome</th><th>Direction across the cycle</th><th>Evidence</th><th>Strongest source</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">Physiology<span class="sub">temp, resting HR, HRV, respiration</span></td>
+          <td>Clear, replicable luteal rise in skin temperature and resting heart rate; HRV falls. Detectable at individual level.</td>
+          <td><span class="grade g-strong">Strong</span></td>
+          <td>Wearable cohorts, n&nbsp;&gt;&nbsp;2,500, 42k+ cycles</td>
+        </tr>
+        <tr>
+          <td class="name">Sleep<span class="sub">architecture &amp; quality</span></td>
+          <td>Late-luteal disruption: lower sleep efficiency, more arousals, less slow-wave sleep. Confirmed by polysomnography, not just self-report.</td>
+          <td><span class="grade g-strong">Strong</span></td>
+          <td>PSG studies + EPISONO database</td>
+        </tr>
+        <tr>
+          <td class="name">Symptom burden &amp; pain<span class="sub">cramps, headache, bloating, fatigue</span></td>
+          <td>Large, consistent perimenstrual peak. PMS prevalence ~48% globally; PMDD ~3–8% by strict prospective criteria.</td>
+          <td><span class="grade g-strong">Strong</span></td>
+          <td>Meta-analyses, n&nbsp;&gt;&nbsp;50,000</td>
+        </tr>
+        <tr>
+          <td class="name">Sexual desire<span class="sub">libido, initiation, activity</span></td>
+          <td>Genuine mid-cycle / peri-ovulatory rise. Tracks estradiol positively, progesterone negatively. Effect is modest but replicates in pre-registered work.</td>
+          <td><span class="grade g-strong">Strong</span></td>
+          <td>26k-entry diary study; hormone-assayed cohorts</td>
+        </tr>
+        <tr>
+          <td class="name">Mood<span class="sub">daily affect</span></td>
+          <td>Real group-level perimenstrual dip — but roughly half of individuals don't show it. Heterogeneity dominates the average.</td>
+          <td><span class="grade g-mixed">Mixed</span></td>
+          <td>EMA study, 352 women, 9,393 entries</td>
+        </tr>
+        <tr>
+          <td class="name">Self-reported concentration<span class="sub">"brain fog", focus, productivity</span></td>
+          <td>Large and consistent: &gt;80% report impaired performance at work during menstruation.</td>
+          <td><span class="grade g-strong">Strong</span></td>
+          <td>Schoep 2019, n = 32,748</td>
+        </tr>
+        <tr>
+          <td class="name">Objective cognition<span class="sub">attention, memory, executive fn.</span></td>
+          <td><strong>No robust effect.</strong> Null across eight domains after correction for multiple comparisons.</td>
+          <td><span class="grade g-weak">Null</span></td>
+          <td>PLOS ONE 2025 meta-analysis, 102 studies</td>
+        </tr>
+        <tr>
+          <td class="name">Athletic performance</td>
+          <td>Trivial reduction in early follicular phase; effect sizes overlap heavily. Individual variation swamps the phase effect.</td>
+          <td><span class="grade g-weak">Weak</span></td>
+          <td>McNulty 2020, 78 studies (8% high quality)</td>
+        </tr>
+        <tr>
+          <td class="name">"Cycle syncing"<span class="sub">phase-tailored training / diet</span></td>
+          <td>Popular, largely unsupported. The one RCT of cycle-tailored weight loss was null in intention-to-treat.</td>
+          <td><span class="grade g-weak">Weak</span></td>
+          <td>Reviews graded "limited" throughout</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Measured here</p>
+  <h2>Two things we established directly from the data</h2>
+  <p>Rather than cite these, we ran them. Both change what you should do next.</p>
+
+  <div class="verified">
+    <p class="eyebrow">Result 1 — phase counting, on 1,478 charted cycles</p>
+    <p>Using the open <a href="https://epublications.marquette.edu/data_nfp/7/">Marquette NFP records</a> (156 women with usable cycles, median 10 cycles each), the textbook claim holds and is quantifiable. <strong>74.4% of cycle-length variance is follicular.</strong> Follicular length correlates with cycle length at <code>r = +0.83</code>; luteal length only at <code>+0.30</code>. Within a single woman, follicular length varies <strong>1.7×</strong> as much as luteal length (median per-woman SD 1.82 vs 1.08 days).</p>
+    <p>The practical consequence: assuming &ldquo;day 14 = ovulation&rdquo; is off by more than three days in <strong>30.5%</strong> of cycles. Counting backward from the next onset instead cuts that to <strong>12.1%</strong> — a 41% reduction in the standard deviation of timing error, at zero cost. Any analysis that forward-counts is throwing away real signal before it starts.</p>
+    <p>Worth stating honestly: the luteal phase is <em>not</em> perfectly fixed. SD 2.04 days, and it does correlate weakly with cycle length. &ldquo;Fixed 14 days&rdquo; is a useful approximation, not a fact.</p>
+  </div>
+
+  <div class="verified">
+    <p class="eyebrow">Result 2 — the Arslan open data is synthetic</p>
+    <p>The OSF project's downloadable dataset is a <a href="https://osf.io/csr9p/">synthpop-generated replica</a>, not the real diary. We tested what it preserves: within-person, the correlation between day-in-study and days-until-next-onset is <code>+0.22</code>, where real diary data would be strongly negative by construction, and only 32% of consecutive daily entries are actually consecutive.</p>
+    <p>So marginal and bivariate structure survives — a fertile-window contrast against the hormonal-contraception control group reproduces the paper's direction on all three outcomes — but <strong>within-person longitudinal structure does not</strong>. Random-slope models can be written and debugged against it; their estimates mean nothing. That is exactly the use the authors intended: build the model here, then ask them to run it on the real data.</p>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Orientation</p>
+  <h2>What is actually happening, phase by phase</h2>
+  <p>Useful as a mental model, but treat the boundaries as fuzzy — and note the measured numbers above: the follicular phase is where cycle-length variation actually lives.</p>
+
+  <div class="phases">
+    <div class="phase">
+      <p class="d">Days 1–5 · Menstrual</p>
+      <p class="n">Peak symptom load</p>
+      <p class="t">Lowest estradiol and progesterone. Pain, fatigue and self-reported concentration difficulty peak here. Highest absenteeism and presenteeism. Objective cognition: unchanged.</p>
+    </div>
+    <div class="phase">
+      <p class="d">Days 6–13 · Follicular</p>
+      <p class="n">Rising, variable</p>
+      <p class="t">Estradiol climbs. Lowest skin temperature and resting heart rate of the cycle. Subjective wellbeing generally highest. Carries ~74% of all cycle-length variance.</p>
+    </div>
+    <div class="phase">
+      <p class="d">~Days 12–16 · Ovulatory</p>
+      <p class="n">Desire window</p>
+      <p class="t">Estradiol peak, LH surge. The one behavioural outcome with a solid mid-cycle signal: sexual desire, initiation and activity rise. Temperature shifts upward just after.</p>
+    </div>
+    <div class="phase">
+      <p class="d">Days 15–28 · Luteal</p>
+      <p class="n">Physiological load</p>
+      <p class="t">Progesterone dominant. Temperature +0.3&thinsp;°C, resting HR up, HRV down, sleep fragmenting. Energy expenditure ~+7%. Mean length 13.1 days, SD 2.0.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Domain detail</p>
+  <h2>Where each claim stands</h2>
+
+  <h3>Concentration and cognition — read this before you write a pitch deck</h3>
+  <p>The <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0318576">2025 PLOS ONE meta-analysis</a> pooled 102 articles, 3,943 participants and 730 comparisons across attention, creativity, executive function, intelligence, memory, motor function, spatial ability and verbal ability. Effects were negligible in every domain. Two spatial-ability comparisons reached nominal significance but did not survive Bonferroni correction and were not supported in studies that confirmed cycle phase hormonally. No evidence of publication bias.</p>
+  <p>The authors are blunt about the implication: there is no scientific basis for reducing women's responsibilities on cycle grounds. They also note the field's weaknesses — mean sample size of 39, inconsistent phase definitions, heavy reliance on self-reported phase rather than assay. Given the 30.5% misclassification rate measured above, that last weakness is not a minor one.</p>
+  <div class="callout">
+    <p class="eyebrow">The gap to build on</p>
+    <p>People consistently report reduced focus perimenstrually. Objective batteries show no decrement. The candidate explanations — that the effect is real but small enough to be compensated for, that effortful compensation is itself the cost, or that pain and sleep loss mediate the subjective experience without touching peak capacity — are <strong>largely untested</strong>. Measuring <em>effort, discomfort and cost of performance</em> rather than performance itself is an open and defensible research position.</p>
+  </div>
+
+  <h3>Energy and fatigue</h3>
+  <p>Fatigue is among the most-reported premenstrual symptoms (~90% in symptomatic samples). Objectively, resting energy expenditure runs roughly 6–7% higher in the luteal phase alongside a ~0.27&thinsp;°C core temperature rise, and a <a href="https://academic.oup.com/nutritionreviews/article/83/3/e866/7713894">2024 meta-analysis in Nutrition Reviews</a> found modestly higher energy intake in the luteal phase — though a precise-measurement 2025 study found no cycle difference in appetite or intake, so treat this as unsettled. The subjective fatigue signal is far stronger than the metabolic one.</p>
+
+  <h3>Sleep</h3>
+  <p>One of the better-evidenced domains, because it has objective corroboration. Sleep efficiency drops in the menstrual and luteal phases relative to mid/late follicular (~83% vs ~90%), with more arousals and reduced slow-wave sleep when progesterone is elevated. Sleep is also an important confounder: a within-person natural experiment in wearable data showed a 10% reduction in weekly sleep raised resting heart rate ~1.2% <em>regardless of cycle phase</em>. If you model cycle effects without controlling sleep, you will attribute sleep effects to the cycle.</p>
+
+  <h3>Libido</h3>
+  <p>The ovulatory-shift literature took a reputational hit when mate-preference findings failed to replicate, but desire itself held up. <a href="https://osf.io/kd26j/overview">Arslan et al.</a> — 1,043 women, 421 naturally cycling, &gt;26,000 diary entries, pre-registered — found robust ovulatory increases in in-pair desire, extra-pair desire and self-perceived desirability. Mechanistically, within-person estradiol positively predicts desire and progesterone negatively predicts it; testosterone shows no reliable association. A <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11076276/">2024 analysis of Flo app data</a> replicated the pattern at app scale. Note the access caveat above: the open OSF release is synthetic.</p>
+
+  <h3>Mood</h3>
+  <p>The honest framing is heterogeneity, not universality. In a <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12198828/">2025 EMA study</a> of 352 women with depression (9,393 daily entries), mood declined gradually from ~14 days pre-menstruation and was lowest from 3 days before to 2 days after onset — but only <strong>54.3%</strong> of participants had a lower mean in that window than the rest of their cycle. Same-day and 1–3 day lagged HRV was associated with mood rating, which is a genuinely promising signal for wearable-based prediction. PMDD prevalence by strict prospective daily rating (DRSP) is far lower than retrospective survey estimates suggest — retrospective recall inflates it substantially.</p>
+
+  <h3>Work and economic burden</h3>
+  <p><a href="https://researchinformation.amsterdamumc.org/en/publications/productivity-loss-due-to-menstruation-related-symptoms-a-nationwi">Schoep et al. (BMJ Open 2019)</a>, n = 32,748 Dutch women aged 15–45, remains the anchor citation: 13.8% reported absenteeism (mean 1.3 days/year), while <strong>80.7% reported presenteeism</strong> — a mean 23.2 days/year of reduced productivity, equivalent to about 8.9 fully lost days annually. Only ~20% told their employer the real reason. Caveats worth stating openly: social-media recruited, self-report, likely skewed toward the symptomatic. Newer 2025 employer-focused surveys in <em>BMC Women's Health</em> replicate the direction and are useful for market sizing.</p>
+</section>
+
+<section>
+  <p class="eyebrow">State of the field</p>
+  <h2>Where the methodology is heading</h2>
+  <p>Four shifts define the current frontier. Aligning with them is how a startup earns scientific credibility rather than buying it.</p>
+  <div class="cards">
+    <div class="card">
+      <h4>Shift 01</h4>
+      <h5>Hormone confirmation replaces day-counting</h5>
+      <p>Counting from last menstrual onset misclassifies phase — measurably, in 30.5% of cycles beyond three days. Reviewers now expect LH tests, urinary metabolites (E3G/PdG) or serum assay. At-home urinalysis (Mira, Inito, Oova) has made this affordable at scale.</p>
+    </div>
+    <div class="card">
+      <h4>Shift 02</h4>
+      <h5>Dense sampling and N-of-1 designs</h5>
+      <p>The <a href="https://openneuro.org/datasets/ds002674/versions/1.0.6">28andMe</a> project scanned one woman on 30 consecutive days, then 30 more on hormonal contraception, and found estradiol tightens whole-brain functional network coherence while progesterone loosens it. Replicated across multiple individuals in <em>Nature Neuroscience</em> (2025). Deep, repeated within-person measurement beats large cross-sectional samples here.</p>
+    </div>
+    <div class="card">
+      <h4>Shift 03</h4>
+      <h5>Wearables as the measurement substrate</h5>
+      <p>Continuous temperature, HR, HRV and respiration now resolve phase without user input. A 2026 <em>npj Digital Medicine</em> cohort covered 2,596 women, 42,759 cycles, 1.2M days. Accuracy caveat: wearables measure heart and respiratory rate well, sleep <em>staging</em> poorly.</p>
+    </div>
+    <div class="card">
+      <h4>Shift 04</h4>
+      <h5>Cycle metrics as health biomarkers</h5>
+      <p>The framing has moved from "predict the next period" to "the cycle is a vital sign." Cycle variability, temperature amplitude and phase-length distributions are being tested as early markers for thyroid, metabolic and reproductive conditions. This is where the funding and the regulatory pathway are.</p>
+    </div>
+  </div>
+  <p>The commercial context matches: femtech funding overall reached record levels, but capital has moved decisively away from tracking utilities toward diagnostics, hormonal-health platforms and care delivery that clinics, insurers and employers pay for. Menstrual-health <em>tools</em> specifically drew only around $15M across three deals in the twelve months to mid-2026. A tracking app is not a fundable category on its own any more; an evidence-generating measurement layer is.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Quantitative data</p>
+  <h2>Datasets you can work with</h2>
+  <p>Access terms below were checked directly, not taken from the papers' claims — two of them did not survive that check.</p>
+
+  <div class="scroller">
+    <table>
+      <thead>
+        <tr><th>Dataset</th><th>What's in it</th><th>Scale</th><th>Access</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name"><a href="https://epublications.marquette.edu/data_nfp/7/">Marquette NFP</a><span class="sub">Fehring; mirrored as "FedCycleData"</span></td>
+          <td><strong>Verified open and immediately analysable.</strong> The only open dataset here with genuine repeated cycles per woman: cycle length, luteal length, estimated ovulation day, peak/high days, daily menses scores, age, BMI. 80 columns. Narrow, but enough to settle the phase-counting question empirically — which is what we did above.</td>
+          <td class="num">159 women<br>1,665 cycles</td>
+          <td><span class="grade g-strong">Fully open</span><span class="sub">Site blocks scripted download; use a browser or the Kaggle/GitHub mirror</span></td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://physionet.org/content/mcphases/1.0.0/">mcPHASES</a><span class="sub">PhysioNet, 2025</span></td>
+          <td>The best fit for the core question. Fitbit Sense physiology + Dexcom G6 continuous glucose + at-home LH/E3G/PdG urinalysis + daily surveys on pain, mood, sleep, stress. 23 structured tables.</td>
+          <td class="num">42 participants<br>3–6 months each</td>
+          <td><span class="grade g-mixed">Registration + DUA</span><span class="sub">Free; credentialing takes weeks — start it now</span></td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://osf.io/kd26j/overview">Arslan diary study</a><span class="sub">OSF — synthetic release</span></td>
+          <td><strong>Correction: the open download is synthetic, not the real diary.</strong> A synthpop replica (30,956 rows × 448 columns) preserving marginal and bivariate structure but <em>not</em> within-person longitudinal structure — confirmed by direct test. Excellent for building and validating models the authors then run on the real data. Codebooks and item tables are genuinely open.</td>
+          <td class="num">1,149 persons<br>30,956 rows (synthetic)</td>
+          <td><span class="grade g-mixed">Synthetic open</span><span class="sub">Real data by author request</span></td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://zenodo.org/records/8084982">LifeSnaps</a><span class="sub">Zenodo, 2022</span></td>
+          <td>Not cycle-specific, but 4 months of Fitbit Sense data + EMA mood/context + validated surveys. 35+ data types, 71M rows. Good for building and validating your physiology pipeline before you touch restricted data.</td>
+          <td class="num">71 participants<br>29 female</td>
+          <td><span class="grade g-strong">Fully open</span><span class="sub">Download now</span></td>
+        </tr>
+        <tr>
+          <td class="name">Clue / BioWink<span class="sub">research partnership</span></td>
+          <td>The largest symptom-tracking corpus used in published work: 20 symptom categories including energy, mental state, sleep, sexual activity, pain, cravings. Underpins the key <a href="https://www.nature.com/articles/s41746-020-0269-8">npj Digital Medicine</a> paper.</td>
+          <td class="num">378,694 users<br>4.9M cycles</td>
+          <td><span class="grade g-mixed">Application + DUA</span><span class="sub">Academic affiliation expected</span></td>
+        </tr>
+        <tr>
+          <td class="name">Apple Women's Health Study<span class="sub">Harvard Chan / NIEHS</span></td>
+          <td>Longitudinal iPhone/Watch cohort: cycle tracking plus symptoms, demographics, activity. Survey instruments drawn from NHANES, Nurses' Health Study 2 and the Ovulation and Menstruation Health study.</td>
+          <td class="num">100k+ enrolled<br>125k+ cycles analysed</td>
+          <td><span class="grade g-weak">Collaboration only</span><span class="sub">No open microdata release</span></td>
+        </tr>
+        <tr>
+          <td class="name">All of Us Research Program<span class="sub">NIH</span></td>
+          <td>EHR + surveys + Fitbit + genomics on a large, deliberately diverse US cohort. Cycle data is thinner than the dedicated cohorts, but the linkage possibilities are unmatched.</td>
+          <td class="num">400k+ participants</td>
+          <td><span class="grade g-mixed">Registered tier</span><span class="sub">Free; workbench-based</span></td>
+        </tr>
+        <tr>
+          <td class="name">UK Biobank</td>
+          <td>~8,700 regularly menstruating women with usable cycle-phase information, linked to metabolomics, biomarkers and outcomes. Good for hormone-metabolite and genetic questions, not for daily symptom dynamics.</td>
+          <td class="num">500k cohort</td>
+          <td><span class="grade g-mixed">Paid application</span><span class="sub">Approx. £3k+ per project</span></td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://openneuro.org/datasets/ds002674/versions/1.0.6">28andMe</a><span class="sub">OpenNeuro ds002674</span></td>
+          <td>Daily MRI + serum hormone assay across two full 30-day cycles (naturally cycling, then on oral contraceptive). Mechanistic rather than commercial, but the citation that makes a neuro claim credible.</td>
+          <td class="num">1 participant<br>60 sessions</td>
+          <td><span class="grade g-strong">Fully open</span><span class="sub">Download now</span></td>
+        </tr>
+        <tr>
+          <td class="name">Kaggle menstrual datasets<span class="sub">various</span></td>
+          <td>Several small or synthetic sets circulate, many of them undocumented re-uploads of the Marquette data. Useful for prototyping pipeline code. Never cite them as evidence without tracing provenance.</td>
+          <td class="num">~100–1,600 rows</td>
+          <td><span class="grade g-strong">Open</span><span class="sub">Low provenance</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <p class="eyebrow">Practical route</p>
+    <p>Start with <strong>Marquette NFP</strong> — small, fully open, and the only one here with genuine repeated cycles per woman, so it is where the phase-counting question actually gets settled. Use <strong>Arslan's synthetic release</strong> to build and validate behavioural models you intend to have run on the real data, not to estimate effects from. Use <strong>LifeSnaps</strong> for the physiological feature pipeline. In parallel, submit the PhysioNet credentialing for <strong>mcPHASES</strong> — the only public dataset joining hormone assay, wearable physiology and daily symptom self-report, which is exactly the three-layer structure your product hypothesis needs. Approach Clue only once you have a specific, publishable question and an academic collaborator.</p>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Qualitative data</p>
+  <h2>Where the lived-experience material is</h2>
+  <p>Qualitative sources are thinner and more scattered than the quantitative ones — there is no canonical archive. Realistically you will combine secondary synthesis, archival collections and your own primary collection.</p>
+
+  <h4>Published syntheses — read before collecting anything</h4>
+  <ul>
+    <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8294489/">Experiences of menstruation in high-income countries</a> — systematic review and qualitative evidence synthesis, with explicit comparison to low- and middle-income settings. The single most efficient starting point; it already codes the recurring themes.</li>
+    <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11654398/">Navigating menstrual stigma and norms</a> — young people's menstrual experiences and coping strategies.</li>
+  </ul>
+
+  <h4>Archives you can commission or search</h4>
+  <ul>
+    <li><a href="https://massobs.org.uk/research/">Mass Observation Archive</a> (Sussex) — continuous everyday-life writing from a volunteer panel since 1981, searchable by writer demographics. Crucially, <strong>you can commission a Directive</strong>: pay to have your own question put to the national panel, producing a bespoke qualitative corpus with an established methodology and ethics framework. Unusually good value for a startup that wants credible qualitative depth.</li>
+    <li><a href="https://ukdataservice.ac.uk/learning-hub/qualitative-data/">UK Data Service — qualitative collections</a> — interview transcripts and diaries deposited from funded studies; search for menstrual and reproductive health depositions.</li>
+    <li>Exeter / Bristol menstrual health work now collecting real-time symptom data within the <em>Children of the 90s</em> (ALSPAC) and <em>Born in Bradford</em> birth cohorts — worth tracking for future linkage.</li>
+  </ul>
+
+  <h4>Social-media corpora — cheap, large, methodologically acceptable if handled properly</h4>
+  <p>Reddit is the workhorse here and there is an established publication pattern to follow: keyword-scoped extraction, LDA or BERTopic for structure, then human codebook development on a subsample with double coding. Recent published examples include <a href="https://pubmed.ncbi.nlm.nih.gov/40163844/">endometriosis communities</a> (30k posts, 300k comments) and menstruation/glycemic-variability content analysis in <em>JMIR Formative Research</em>. Relevant subreddits: r/Periods, r/PMDD, r/TwoXChromosomes, r/endometriosis, r/PCOS, r/birthcontrol. Note that Reddit skews young, Anglophone and symptom-selected — it over-represents distress.</p>
+
+  <h4>Your own collection — the actual differentiator</h4>
+  <p>None of the above captures the specific gap identified earlier: what the effort of working through a symptomatic day feels like, and what is being traded away to maintain output. That is not in any archive. A 30–40 person diary study, run for two to three cycles alongside a wearable, with a short structured daily entry plus a weekly open prompt, would be both a product-research asset and a genuinely publishable contribution. Budget roughly 8–12 weeks and ethics review if you want it published.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Analysis notes</p>
+  <h2>Five ways this analysis usually goes wrong</h2>
+  <ol>
+    <li><strong>Phase misclassification.</strong> Counting forward from menstrual onset assumes a fixed follicular length, which is the one thing that varies. Measured on 1,478 charted cycles: 74% of cycle-length variance is follicular, and assuming &ldquo;day 14 = ovulation&rdquo; is off by more than three days in <strong>30.5%</strong> of cycles versus <strong>12.1%</strong> counting backward from the next onset. Better still, detect the temperature shift or LH surge. Misclassification systematically attenuates real effects toward null — some of the &ldquo;no effect&rdquo; literature is partly this.</li>
+    <li><strong>Confounding cycle with sleep, stress and workload.</strong> Sleep loss alone moves resting HR and HRV in the same direction the luteal phase does. Model sleep and weekday explicitly, or you will publish a sleep finding labelled as a cycle finding.</li>
+    <li><strong>Aggregating away the individual.</strong> Roughly half of people show no perimenstrual mood dip. A population-average curve describes almost nobody. Use mixed-effects models with random slopes, or explicitly cluster into response phenotypes — the clustering itself is the interesting result and the defensible product feature.</li>
+    <li><strong>Self-tracking artifacts.</strong> App data is missing-not-at-random: people log more when symptomatic, and stop logging when life is busy. There is <a href="https://academic.oup.com/jamia/article/29/1/3/6371799">published methodology for adherence-aware cycle modelling</a> — use it rather than treating gaps as absence of symptoms.</li>
+    <li><strong>Trusting a dataset's description over its contents.</strong> Two of the ten datasets above were described in the literature in ways that did not survive a direct check — one is synthetic, one blocks programmatic access. Profile every dataset before you plan analyses on it: test whether the structure your model assumes is actually present.</li>
+  </ol>
+</section>
+
+<section>
+  <p class="eyebrow">Constraints</p>
+  <h2>Regulatory and data-protection reality</h2>
+  <p>Menstrual data is special-category health data under GDPR Art. 9 and is politically exposed in the US post-<em>Dobbs</em>. The enforcement record is not hypothetical: the FTC settled with Flo Health in 2021 over sharing intimate cycle and pregnancy data with Facebook and Google, and a 2025 class action alleged the transmission continued via embedded SDKs. GoodRx, Premom and BetterHelp have all been fined for related conduct. The UK ICO reviewed fertility apps in 2023.</p>
+  <p>Two structural points that should shape your architecture from day one, not later:</p>
+  <ul>
+    <li>Consumer cycle apps generally sit <em>outside</em> HIPAA — which is a liability rather than a relief, because users assume medical-grade protection they are not getting. Meeting the expectation is a differentiator; a growing set of competitors are marketing on exactly this.</li>
+    <li>If you intend to make claims about health states rather than lifestyle, you cross into medical device territory (EU MDR / FDA SaMD). "Wellness" positioning avoids the burden but also caps what you may say, and increasingly caps who will pay.</li>
+  </ul>
+  <p>Practical implication: local-first or end-to-end-encrypted storage, no third-party analytics SDKs on any screen touching cycle data, explicit granular consent for research use, and a documented data-use agreement template if you ever want academic partners. Research consent is a separate consent from product consent.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Openings</p>
+  <h2>What nobody has done well yet</h2>
+  <ul>
+    <li><strong>Measure cost, not capacity.</strong> The subjective/objective gap is unexplained. Instruments that capture effort, discomfort and compensation — rather than task accuracy — would be novel, and would let you make a defensible claim without contradicting the meta-analysis.</li>
+    <li><strong>Phenotype rather than average.</strong> Given ~50% non-responders on mood, an evidence-backed classifier that tells a person which pattern they actually have — and honestly tells many of them "your cycle isn't driving this" — is more trustworthy and more differentiated than universal phase advice.</li>
+    <li><strong>Hormone-confirmed consumer data at scale.</strong> At-home E3G/PdG strips plus a wearable would produce the dataset the field says it needs. That corpus is itself an asset, independent of the app.</li>
+    <li><strong>Employer and clinical buyers.</strong> The 23-days-of-presenteeism figure is a procurement argument, not a consumer one. That is where money is currently moving in femtech.</li>
+    <li><strong>Falsify cycle syncing properly.</strong> A well-run RCT would be widely covered whichever way it lands, and being the company that ran it is a durable credibility position.</li>
+  </ul>
+</section>
+
+<div class="foot">
+  <p><strong>A note on framing.</strong> The strongest scientific position available to you is also the strongest ethical one: the cycle produces real, measurable physiological change and real symptom burden, and it does not make women worse at their jobs. Products built on the first two claims have evidence behind them. Products built on the third do not, and the meta-analytic literature is now explicit in rejecting it.</p>
+  <p>Revision 2. Dataset access terms and the two &ldquo;measured here&rdquo; results were verified directly against the data rather than taken from published descriptions; analysis code lives in <code>cycle-analysis/notebooks/</code>. Effect sizes and access conditions were current as of this revision — DUA terms change. Nothing here is medical or legal advice.</p>
+</div>
+
+</div>
