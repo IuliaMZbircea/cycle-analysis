@@ -133,7 +133,7 @@ h2{font-family:"Newsreader",Georgia,serif;font-size:1.2rem;font-weight:600;margi
 .ring .sg.future{stroke:var(--surface-2);stroke-opacity:.55}
 .ring .sg.sel{stroke-width:19}
 .ring .ov{stroke:var(--teal);stroke-width:2.5;stroke-linecap:round}
-.ring .mk{fill:var(--ink)}
+.ring .mk{fill:var(--ink);stroke:var(--ground);stroke-width:2.5}
 .ring .mk-halo{fill:var(--ink);opacity:.15}
 .ring .rn{font:500 58px "Newsreader",Georgia,serif;fill:var(--ink);text-anchor:middle}
 .ring .rl{font:600 10.5px "IBM Plex Mono",monospace;letter-spacing:.14em;fill:var(--muted);text-anchor:middle;text-transform:uppercase}
@@ -635,10 +635,10 @@ h2{font-family:"Newsreader",Georgia,serif;font-size:1.2rem;font-weight:600;margi
       svg.appendChild(el("line", { x1: q0[0], y1: q0[1], x2: q1[0], y2: q1[1], "class": "ov" }));
     }
 
-    var m = polar(R - 20, (selIdx + 0.5) * step);
-    var halo = el("circle", { cx: m[0], cy: m[1], r: 7, "class": "mk-halo" + (justSaved === selected ? " pulse" : "") });
+    var m = polar(R, (selIdx + 0.5) * step);
+    var halo = el("circle", { cx: m[0], cy: m[1], r: 11, "class": "mk-halo" + (justSaved === selected ? " pulse" : "") });
     svg.appendChild(halo);
-    svg.appendChild(el("circle", { cx: m[0], cy: m[1], r: 4, "class": "mk" }));
+    svg.appendChild(el("circle", { cx: m[0], cy: m[1], r: 6, "class": "mk" }));
 
     if (info.day) {
       svg.appendChild(el("text", { x: 130, y: 138, "class": "rn" }, String(info.day)));
